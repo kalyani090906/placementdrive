@@ -17,8 +17,10 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // IMPORTANT: Ensure you have a serviceAccountKey.json file in this directory
-const serviceAccount = require('./serviceAccountKey.json');
-
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+  : require('./serviceAccountKey.json');
+  
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
