@@ -1,17 +1,14 @@
 // frontend/src/api.js
 
 const getApiUrl = () => {
-    // Get the hostname from the browser's current URL
-    const hostname = window.location.hostname;
-    
-    // If accessing via localhost
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return 'http://localhost:5000/api';
-    }
-    
-    // If accessing via network IP (like 192.168.x.x or 10.x.x.x)
-    // Use the same IP but with port 5000 for the backend
-    return `http://${hostname}:5000/api`;
+   const hostname = window. location.hostname;
+
+// Local development
+if (hostname === 'localhost' || hostname === '127.0.0.1') {
+return 'http://localhost:5000/api';
+}
+// Production - point to your Render backend URL
+return 'https://placementdrive-backend.com/api';
 };
 
 export const API_URL = getApiUrl();
