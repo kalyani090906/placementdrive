@@ -1,7 +1,7 @@
 // frontend/src/api.js
 
 const getApiUrl = () => {
-   const hostname = window. location.hostname;
+   const hostname = window.location.hostname;
 
 // Local development
 if (hostname === 'localhost' || hostname === '127.0.0.1') {
