@@ -8,7 +8,7 @@ if (hostname === 'localhost' || hostname === '127.0.0.1') {
 return 'http://localhost:5000/api';
 }
 // Production - point to your Render backend URL
-return 'https://placementdrive-backend.com/api';
+return 'https://placementdrive-backend.onrender.com/api';
 };
 
 export const API_URL = getApiUrl();
