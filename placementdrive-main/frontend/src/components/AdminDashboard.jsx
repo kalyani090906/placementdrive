@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 // With the proxy, we no longer need the full API_URL. We can use relative paths.
 // const API_URL = 'http://localhost:5000'; // This line is no longer needed.
-
+import { API_URL } from '../api';
 const AdminDashboard = ({ user, onLogout }) => {
     // ... (all your existing state variables)
     const [name, setName] = useState('');
@@ -82,7 +82,7 @@ const AdminDashboard = ({ user, onLogout }) => {
         try {
             const token = await getAuthToken();
             // --- FIX: Use the relative path, which will be caught by the proxy ---
-            const response = await fetch('/api/admin/create-user', {
+            const response = await fetch(`${API_URL}/admin/create-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ const AdminDashboard = ({ user, onLogout }) => {
 
     try {
         const token = await getAuthToken();
-        const response = await fetch('/api/admin/upload-users', {
+        const response = await fetch(`${API_URL}/admin/upload-users`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData,
