@@ -439,19 +439,33 @@ const [testScores, setTestScores] = useState([]);
         }
 
         let endpoint = '';
-        let payload = {
-            testName: testForm.testName,
-            courseId: selectedSubject.id,
-            durationMinutes: parseInt(testForm.durationMinutes),
-            releaseOption: testForm.releaseOption,
-            scheduledDate: testForm.scheduledDate,
-            scheduledTime: testForm.scheduledTime,
-            selectedPoolIds: selectedPoolIds,
-            createdBy: user.uid,
-            endOption: testForm.endOption, 
-            endDate: testForm.endDate,     
-            endTime: testForm.endTime      
-        };
+        // Convert a local date+time string to UTC ISO string (treating input as IST)
+const toISTISOString = (date, time) => {
+    if (!date || !time) return null;
+    // IST is UTC+5:30, so subtract 5h30m to get UTC
+    const localDate = new Date(`${date}T${time}:00+05:30`);
+    return localDate.toISOString();
+};
+
+let payload = {
+    testName: testForm.testName,
+    courseId: selectedSubject.id,
+    durationMinutes: parseInt(testForm.durationMinutes),
+    releaseOption: testForm.releaseOption,
+    scheduledDate: testForm.scheduledDate,
+    scheduledTime: testForm.scheduledTime,
+    scheduledFor: testForm.releaseOption === 'schedule' 
+        ? toISTISOString(testForm.scheduledDate, testForm.scheduledTime) 
+        : null,
+    selectedPoolIds: selectedPoolIds,
+    createdBy: user.uid,
+    endOption: testForm.endOption, 
+    endDate: testForm.endDate,     
+    endTime: testForm.endTime,
+    scheduledEnd: testForm.endOption === 'schedule'
+        ? toISTISOString(testForm.endDate, testForm.endTime)
+        : null,
+};
         // now
         // 🔑 tells backend to generate UNIQUE papers per student
         payload.perStudentRandomization = true;
