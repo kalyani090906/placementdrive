@@ -536,11 +536,11 @@ app.post('/api/tests/release-random', async (req, res) => {
         };
 
         if (releaseOption === 'schedule') {
-            testData.scheduledFor = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
+            testData.scheduledFor = new Date(`${scheduledDate}T${scheduledTime}:00+05:30`).toISOString();
         }
 
         if (endOption === 'schedule' && endDate && endTime) {
-            testData.scheduledEnd = new Date(`${endDate}T${endTime}`).toISOString();
+            testData.scheduledEnd = new Date(`${endDate}T${endTime}:00+05:30`).toISOString();
         }
 
         await db.collection("tests").add(testData);
