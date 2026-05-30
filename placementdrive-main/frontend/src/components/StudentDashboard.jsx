@@ -2,14 +2,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import TestScreen from './Test.js';
 import ResultsScreen from './Results.jsx';
-import ReviewScreen from './ReviewScreen.jsx'; 
-import { collection, query, where, getDocs } from "firebase/firestore"; 
-import { 
-    EmailAuthProvider, 
-    reauthenticateWithCredential, 
-    updatePassword 
-} from "firebase/auth"; 
-import { db, auth } from '../firebase.js'; 
+import ReviewScreen from './ReviewScreen.jsx';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    updatePassword
+} from "firebase/auth";
+import { db, auth } from '../firebase.js';
 
 // CHART.JS IMPORTS
 import { Line } from 'react-chartjs-2';
@@ -48,8 +48,8 @@ function StudentDashboard({ user, onLogout }) {
     });
 
     const [availableTests, setAvailableTests] = useState([]);
-    const [missedTests, setMissedTests] = useState([]); 
-    const [testHistory, setTestHistory] = useState({}); 
+    const [missedTests, setMissedTests] = useState([]);
+    const [testHistory, setTestHistory] = useState({});
 
     // --- DATA FETCHING LOGIC ---
     const fetchAllTestData = useCallback(async (courseId) => {
@@ -63,10 +63,10 @@ function StudentDashboard({ user, onLogout }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ studentId: user.uid }),
             });
-            
+
             if (!availableResponse.ok) throw new Error("Failed to fetch available tests.");
             const tests = await availableResponse.json();
-            setAvailableTests(tests.filter(t => t.courseId === courseId)); 
+            setAvailableTests(tests.filter(t => t.courseId === courseId));
 
             const historyResponse = await fetch(`${API_URL}/tests/history`, {
                 method: 'POST',
@@ -76,8 +76,8 @@ function StudentDashboard({ user, onLogout }) {
             if (!historyResponse.ok) throw new Error("Failed to fetch test history.");
             const historyData = await historyResponse.json();
             const courseHistory = historyData[courseId] || [];
-            setTestHistory(historyData); 
-            
+            setTestHistory(historyData);
+
             const testsRef = collection(db, 'tests');
             const q = query(testsRef, where('courseId', '==', courseId));
             const querySnapshot = await getDocs(q);
@@ -89,9 +89,9 @@ function StudentDashboard({ user, onLogout }) {
                 const isInactive = test.status === 'inactive';
                 const isExpired = test.scheduledEnd && new Date(test.scheduledEnd) <= now;
                 const isCompleted = completedTestIds.has(test.id);
-                return (isInactive || isExpired) && !isCompleted; 
+                return (isInactive || isExpired) && !isCompleted;
             });
-            
+
             setMissedTests(missed);
         } catch (err) {
             console.error('Error fetching all test data:', err);
@@ -122,10 +122,10 @@ function StudentDashboard({ user, onLogout }) {
         try {
             const currentUser = auth.currentUser;
             const credential = EmailAuthProvider.credential(currentUser.email, passwords.oldPassword);
-            
+
             // Step 1: Re-authenticate
             await reauthenticateWithCredential(currentUser, credential);
-            
+
             // Step 2: Update Password
             await updatePassword(currentUser, passwords.newPassword);
 
@@ -153,35 +153,35 @@ function StudentDashboard({ user, onLogout }) {
     };
 
     const resetToDashboard = () => {
-        setCurrentScreen('subjects'); 
+        setCurrentScreen('subjects');
         setTestData(null);
         setTestResults(null);
         setError('');
         if (user) fetchAllTestData(selectedCourse?.id || null);
     };
-    
+
     const viewTestReview = async (testId) => {
-      setIsLoading(true);
-      setError('');
-      try {
-        const isMissed = missedTests.some(test => test.id === testId);
-        let endpoint = isMissed 
-            ? `${API_URL}/tests/missed-details/${testId}` 
-            : `${API_URL}/results/${testId}`;
+        setIsLoading(true);
+        setError('');
+        try {
+            const isMissed = missedTests.some(test => test.id === testId);
+            let endpoint = isMissed
+                ? `${API_URL}/tests/missed-details/${testId}`
+                : `${API_URL}/results/${testId}`;
 
-        const response = await fetch(endpoint); 
-        if (!response.ok) throw new Error('Failed to fetch review data.');
+            const response = await fetch(endpoint);
+            if (!response.ok) throw new Error('Failed to fetch review data.');
 
-        const data = await response.json();
-        setReviewData(data);
-        setCurrentScreen('review');
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
+            const data = await response.json();
+            setReviewData(data);
+            setCurrentScreen('review');
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
-    
+
     const startTest = async (testId) => {
         setIsLoading(true);
         setError('');
@@ -191,13 +191,13 @@ function StudentDashboard({ user, onLogout }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ studentId: user.uid, testId }),
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
-                fetchAllTestData(selectedCourse.id); 
+                fetchAllTestData(selectedCourse.id);
                 throw new Error(errorData.message || 'Failed to start test.');
             }
-            
+
             const data = await response.json();
             setTestData(data);
             setCurrentScreen('test');
@@ -248,38 +248,38 @@ function StudentDashboard({ user, onLogout }) {
     );
 
     const renderChangePassword = () => (
-        <div className="card" style={{maxWidth: '500px', margin: '2rem auto'}}>
+        <div className="card" style={{ maxWidth: '500px', margin: '2rem auto' }}>
             <h2>Security</h2>
-            <p style={{color: '#6b7280', marginBottom: '1.5rem'}}>Update your account password below.</p>
+            <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Update your account password below.</p>
             <form onSubmit={handlePasswordChange}>
                 <div className="input-group">
                     <label>Current Password</label>
-                    <input 
-                        type="password" 
-                        value={passwords.oldPassword} 
-                        onChange={(e) => setPasswords({...passwords, oldPassword: e.target.value})}
-                        required 
+                    <input
+                        type="password"
+                        value={passwords.oldPassword}
+                        onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
+                        required
                     />
                 </div>
                 <div className="input-group">
                     <label>New Password</label>
-                    <input 
-                        type="password" 
-                        value={passwords.newPassword} 
-                        onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
-                        required 
+                    <input
+                        type="password"
+                        value={passwords.newPassword}
+                        onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                        required
                     />
                 </div>
                 <div className="input-group">
                     <label>Confirm New Password</label>
-                    <input 
-                        type="password" 
-                        value={passwords.confirmPassword} 
-                        onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
-                        required 
+                    <input
+                        type="password"
+                        value={passwords.confirmPassword}
+                        onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                        required
                     />
                 </div>
-                <div style={{display: 'flex', gap: '1rem', marginTop: '2rem'}}>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                     <button type="submit" className="btn btn-primary">Update Password</button>
                     <button type="button" onClick={() => setCurrentScreen('subjects')} className="btn btn-secondary">Cancel</button>
                 </div>
@@ -300,18 +300,17 @@ function StudentDashboard({ user, onLogout }) {
                 data: sortedHistory.map(t => t.score),
                 borderColor: '#D22D64',
                 tension: 0.1,
-                pointBackgroundColor: '#D22D64', 
+                pointBackgroundColor: '#D22D64',
                 pointRadius: 5
             }]
         };
 
         return (
             <div>
-                <div className="card" style={{marginBottom: '2rem'}}>
-                    <button onClick={handleBackToSubjects} className="btn btn-secondary" style={{marginBottom: '1rem'}}>← Back to Subjects</button>
+                <div className="card" style={{ marginBottom: '2rem' }}>
                     <h2>{selectedCourse.name} Tests</h2>
                 </div>
-                
+
                 <div className="card">
                     <h3>Available Tests</h3>
                     <div className="student-tests">
@@ -324,7 +323,7 @@ function StudentDashboard({ user, onLogout }) {
                                     </div>
                                     <div className="test-details">
                                         <p>Duration: {test.durationMinutes} mins</p>
-                                        {test.scheduledEnd && <p style={{fontWeight: 'bold', color: '#D22D64'}}>Ends: {new Date(test.scheduledEnd).toLocaleString()}</p>}
+                                        {test.scheduledEnd && <p style={{ fontWeight: 'bold', color: '#D22D64' }}>Ends: {new Date(test.scheduledEnd).toLocaleString()}</p>}
                                     </div>
                                     <button onClick={() => startTest(test.id)} className="btn btn-primary">Start Test</button>
                                 </div>
@@ -333,45 +332,45 @@ function StudentDashboard({ user, onLogout }) {
                     </div>
                 </div>
 
-                <div className="card" style={{marginTop: '2rem'}}>
-  <h3>Missed Tests ({missedTests.length})</h3>
-  <div className="student-tests">
-    {missedTests.length > 0 ? (
-      missedTests.map(test => (
-        <div key={test.id} className="test-card missed-test-card">
-          <div className="test-header">
-            <h4>{test.testName}</h4>
-            <span className="test-status status-inactive">MISSED</span>
-          </div>
+                <div className="card" style={{ marginTop: '2rem' }}>
+                    <h3>Missed Tests ({missedTests.length})</h3>
+                    <div className="student-tests">
+                        {missedTests.length > 0 ? (
+                            missedTests.map(test => (
+                                <div key={test.id} className="test-card missed-test-card">
+                                    <div className="test-header">
+                                        <h4>{test.testName}</h4>
+                                        <span className="test-status status-inactive">MISSED</span>
+                                    </div>
 
-          {Array.isArray(test.questionIds) ? (
-  <button
-    onClick={() => viewTestReview(test.id)}
-    className="btn btn-secondary btn-sm"
-  >
-    View Questions
-  </button>
-) : (
-  <button
-    disabled
-    className="btn btn-secondary btn-sm"
-    title="Randomized tests cannot be reviewed"
-    style={{ opacity: 0.6, cursor: 'not-allowed' }}
-  >
-    Review Unavailable
-  </button>
-)}
+                                    {Array.isArray(test.questionIds) ? (
+                                        <button
+                                            onClick={() => viewTestReview(test.id)}
+                                            className="btn btn-secondary btn-sm"
+                                        >
+                                            View Questions
+                                        </button>
+                                    ) : (
+                                        <button
+                                            disabled
+                                            className="btn btn-secondary btn-sm"
+                                            title="Randomized tests cannot be reviewed"
+                                            style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                                        >
+                                            Review Unavailable
+                                        </button>
+                                    )}
 
 
-        </div>
-      ))
-    ) : <p>No missed tests found.</p>}
-  </div>
-</div>
+                                </div>
+                            ))
+                        ) : <p>No missed tests found.</p>}
+                    </div>
+                </div>
 
 
                 {courseHistory.length > 0 && (
-                    <div className="card" style={{marginTop: '2rem'}}>
+                    <div className="card" style={{ marginTop: '2rem' }}>
                         <h3>Test History</h3>
                         <div className="test-history">
                             {courseHistory.map(h => (
@@ -385,9 +384,9 @@ function StudentDashboard({ user, onLogout }) {
                 )}
 
                 {courseHistory.length >= 2 && (
-                    <div className="card" style={{marginTop: '2rem'}}>
+                    <div className="card" style={{ marginTop: '2rem' }}>
                         <h3>Improvement Trend</h3>
-                        <div style={{height: '300px'}}><Line data={improvementTrendData} options={{ responsive: true, maintainAspectRatio: false }} /></div>
+                        <div style={{ height: '300px' }}><Line data={improvementTrendData} options={{ responsive: true, maintainAspectRatio: false }} /></div>
                     </div>
                 )}
             </div>
@@ -397,8 +396,27 @@ function StudentDashboard({ user, onLogout }) {
     return (
         <div className="app-container">
             <nav className="navbar">
-                <h1>Student Dashboard</h1>
+                <h1>Student Dashboard {selectedCourse ? `- ${selectedCourse.name}` : ''}</h1>
                 <div className="profile-container">
+                    {currentScreen === 'tests' && (
+                        <button
+                            onClick={handleBackToSubjects}
+                            className="btn btn-secondary"
+                            style={{ marginRight: '0.75rem' }}
+                        >
+                            ← Back to Subjects
+                        </button>
+                    )}
+                    {currentScreen === 'review' && (
+                        <button
+                            onClick={() => setCurrentScreen('tests')}
+                            className="btn btn-secondary"
+                            style={{ marginRight: '0.75rem' }}
+                        >
+                            ← Back to Dashboard
+                        </button>
+                    )}
+
                     <div className="profile-trigger" onClick={() => setShowProfileMenu(!showProfileMenu)}>
                         <span className="user-name-nav">{user.name}</span>
                         <div className="profile-icon-nav">👤</div>

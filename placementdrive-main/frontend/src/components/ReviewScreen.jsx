@@ -14,7 +14,6 @@ const ReviewScreen = ({ reviewData, onBack }) => {
       <div className="card">
         <h2>No Review Data Available</h2>
         <p>The test details could not be loaded or the test was empty.</p>
-        <button onClick={onBack} className="btn btn-primary" style={{ marginTop: '1rem' }}>Back to Dashboard</button>
       </div>
   );
 
@@ -189,9 +188,6 @@ const ReviewScreen = ({ reviewData, onBack }) => {
         );
       })}
 
-      <button onClick={onBack} className="btn btn-primary btn-full" style={{ marginTop: '2rem' }}>
-        Back to Dashboard
-      </button>
     </div>
   );
 };
