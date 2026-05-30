@@ -109,6 +109,10 @@ textarea:focus-visible,
 .profile-container {
   position: relative;
   cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .profile-trigger {
